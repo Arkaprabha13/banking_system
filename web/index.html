@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banking System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        [x-cloak] { display: none !important; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        
+        /* Transaction type styling */
+        .transaction-type-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .type-deposit { background-color: #dcfce7; color: #166534; }
+        .type-withdrawal { background-color: #fee2e2; color: #991b1b; }
+        .type-transfer { background-color: #dbeafe; color: #1e40af; }
+        .type-payment { background-color: #f3e8ff; color: #7c2d12; }
+        .type-fee { background-color: #fed7aa; color: #9a3412; }
+        .type-unknown { background-color: #f3f4f6; color: #374151; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div id="app" x-data="bankingApp()" x-init="init()" x-cloak>
+        <!-- Navigation -->
+        <nav class="gradient-bg text-white shadow-lg">
+            <div class="container mx-auto px-4 py-3">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-university text-2xl"></i>
+                        <h1 class="text-xl font-bold">Banking System</h1>
+                    </div>
+                    <div x-show="isAuthenticated" class="flex items-center space-x-4">
+                        <span x-text="'Welcome, ' + currentUser.username" class="text-blue-100"></span>
+                        <button @click="logout()" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded transition-colors">
+                            <i class="fas fa-sign-out-alt mr-1"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Connection Status -->
+        <div class="container mx-auto px-4 py-2">
+            <div x-show="connectionStatus" class="mb-4">
+                <div :class="connectionStatus.success ? 'bg-green-100 border-green-400 text-green-700' : 'bg-red-100 border-red-400 text-red-700'" 
+                     class="border px-4 py-3 rounded">
+                    <div class="flex items-center">
+                        <i :class="connectionStatus.success ? 'fas fa-check-circle text-green-500' : 'fas fa-exclamation-triangle text-red-500'" class="mr-2"></i>
+                        <span x-text="connectionStatus.message"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login/Register Modal -->
+        <div x-show="!isAuthenticated" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4 shadow-2xl">
+                <div class="text-center mb-6">
+                    <i class="fas fa-university text-4xl text-blue-600 mb-2"></i>
+                    <h2 class="text-2xl font-bold text-gray-800">Banking System</h2>
+                    <p class="text-gray-600 mt-2">Secure Banking Platform</p>
+                </div>
+
+                <!-- Tab Navigation -->
+                <div class="flex mb-6 border-b">
+                    <button @click="authMode = 'login'" 
+                            :class="{'border-b-2 border-blue-600 text-blue-600': authMode === 'login'}"
+                            class="flex-1 py-2 px-4 text-center font-medium transition-colors">Login</button>
+                    <button @click="authMode = 'register'" 
+                            :class="{'border-b-2 border-blue-600 text-blue-600': authMode === 'register'}"
+                            class="flex-1 py-2 px-4 text-center font-medium transition-colors">Register</button>
+                </div>
+
+                <!-- Login Form -->
+                <form x-show="authMode === 'login'" @submit.prevent="login()" class="space-y-4">
+                    <div class="bg-blue-50 p-3 rounded-lg text-sm text-blue-700">
+                        <strong>Test Credentials:</strong><br>
+                        Admin: admin / password<br>
+                        Customer: johndoe / customer123
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Username</label>
+                        <input x-model="loginForm.username" type="text" required
+                               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                        <input x-model="loginForm.password" type="password" required
+                               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                    </div>
+                    <button type="submit" :disabled="loading"
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg disabled:opacity-50 transition-colors">
+                        <span x-show="!loading">Login</span>
+                        <span x-show="loading"><i class="fas fa-spinner fa-spin mr-2"></i>Logging in...</span>
+                    </button>
+                </form>
+
+                <!-- Register Form -->
+                <form x-show="authMode === 'register'" @submit.prevent="register()" class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Username</label>
+                        <input x-model="registerForm.username" type="text" required minlength="3"
+                               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                        <input x-model="registerForm.password" type="password" required minlength="6"
+                               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                        <input x-model="registerForm.email" type="email" required
+                               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Full Name</label>
+                        <input x-model="registerForm.full_name" type="text" required
+                               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500">
+                    </div>
+                    <button type="submit" :disabled="loading"
+                            class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg disabled:opacity-50 transition-colors">
+                        <span x-show="!loading">Register</span>
+                        <span x-show="loading"><i class="fas fa-spinner fa-spin mr-2"></i>Registering...</span>
+                    </button>
+                </form>
+
+                <!-- Error Messages -->
+                <div x-show="error" class="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle mr-2"></i>
+                        <span x-text="error"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div x-show="isAuthenticated" class="container mx-auto px-4 py-6">
+            <!-- Dashboard Header -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Dashboard</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+                        <div class="flex items-center">
+                            <i class="fas fa-wallet text-blue-600 text-2xl mr-3"></i>
+                            <div>
+                                <p class="text-gray-600 text-sm">Total Accounts</p>
+                                <p class="text-2xl font-bold text-blue-600" x-text="accounts.length"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
+                        <div class="flex items-center">
+                            <i class="fas fa-dollar-sign text-green-600 text-2xl mr-3"></i>
+                            <div>
+                                <p class="text-gray-600 text-sm">Total Balance</p>
+                                <p class="text-2xl font-bold text-green-600" x-text="formatCurrency(totalBalance)"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-500">
+                        <div class="flex items-center">
+                            <i class="fas fa-exchange-alt text-purple-600 text-2xl mr-3"></i>
+                            <div>
+                                <p class="text-gray-600 text-sm">Transactions</p>
+                                <p class="text-2xl font-bold text-purple-600" x-text="transactions.length"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="bg-white rounded-lg shadow-md mb-6">
+                <div class="flex border-b">
+                    <button @click="activeTab = 'accounts'" 
+                            :class="{'bg-blue-600 text-white': activeTab === 'accounts', 'text-gray-600 hover:bg-gray-50': activeTab !== 'accounts'}"
+                            class="px-6 py-3 font-medium transition-colors">
+                        <i class="fas fa-credit-card mr-2"></i>Accounts
+                    </button>
+                    <button @click="activeTab = 'transactions'" 
+                            :class="{'bg-blue-600 text-white': activeTab === 'transactions', 'text-gray-600 hover:bg-gray-50': activeTab !== 'transactions'}"
+                            class="px-6 py-3 font-medium transition-colors">
+                        <i class="fas fa-exchange-alt mr-2"></i>Transactions
+                    </button>
+                    <button @click="activeTab = 'transfer'" 
+                            :class="{'bg-blue-600 text-white': activeTab === 'transfer', 'text-gray-600 hover:bg-gray-50': activeTab !== 'transfer'}"
+                            class="px-6 py-3 font-medium transition-colors">
+                        <i class="fas fa-paper-plane mr-2"></i>Transfer
+                    </button>
+                </div>
+
+                <!-- Accounts Tab -->
+                <div x-show="activeTab === 'accounts'" class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold">My Accounts</h3>
+                        <button @click="showCreateAccountModal = true" 
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+                            <i class="fas fa-plus mr-2"></i>Create Account
+                        </button>
+                    </div>
+
+                    <div x-show="accounts.length === 0" class="text-center py-8 text-gray-500">
+                        <i class="fas fa-wallet text-4xl mb-4"></i>
+                        <p>No accounts found. Create your first account to get started!</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <template x-for="account in accounts" :key="account.account_number">
+                            <div class="gradient-bg text-white p-6 rounded-lg shadow-md">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <p class="text-blue-100 text-sm">Account Number</p>
+                                        <p class="font-mono text-lg" x-text="account.account_number"></p>
+                                    </div>
+                                    <i class="fas fa-credit-card text-2xl text-blue-200"></i>
+                                </div>
+                                <div class="mb-4">
+                                    <p class="text-blue-100 text-sm">Account Type</p>
+                                    <p class="font-semibold text-lg" x-text="account.account_type"></p>
+                                </div>
+                                <div class="mb-4">
+                                    <p class="text-blue-100 text-sm">Balance</p>
+                                    <p class="text-2xl font-bold" x-text="formatCurrency(account.balance)"></p>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button @click="openDepositModal(account)" 
+                                            class="flex-1 bg-green-500 hover:bg-green-600 py-2 px-3 rounded text-sm transition-colors">
+                                        <i class="fas fa-plus mr-1"></i>Deposit
+                                    </button>
+                                    <button @click="openWithdrawModal(account)" 
+                                            class="flex-1 bg-red-500 hover:bg-red-600 py-2 px-3 rounded text-sm transition-colors">
+                                        <i class="fas fa-minus mr-1"></i>Withdraw
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Transactions Tab -->
+                <div x-show="activeTab === 'transactions'" class="p-6">
+                    <h3 class="text-xl font-bold mb-4">Transaction History</h3>
+                    
+                    <div x-show="transactions.length === 0" class="text-center py-8 text-gray-500">
+                        <i class="fas fa-receipt text-4xl mb-4"></i>
+                        <p>No transactions found.</p>
+                    </div>
+
+                    <div x-show="transactions.length > 0" class="overflow-x-auto">
+                        <table class="w-full table-auto">
+                            <thead>
+                                <tr class="bg-gray-50">
+                                    <th class="px-4 py-2 text-left">Date</th>
+                                    <th class="px-4 py-2 text-left">Type</th>
+                                    <th class="px-4 py-2 text-left">Amount</th>
+                                    <th class="px-4 py-2 text-left">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template x-for="transaction in transactions" :key="transaction.id">
+                                    <tr class="border-b hover:bg-gray-50">
+                                        <td class="px-4 py-2" x-text="formatDate(transaction.timestamp)"></td>
+                                        <td class="px-4 py-2">
+                                            <div class="transaction-type-badge" 
+                                                 :class="getTransactionTypeClass(transaction.type)">
+                                                <span x-text="getTransactionTypeIcon(transaction.type)"></span>
+                                                <span x-text="getTransactionTypeText(transaction.type)"></span>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-2" x-text="formatCurrency(Math.abs(transaction.amount))"></td>
+                                        <td class="px-4 py-2" x-text="transaction.description"></td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Transfer Tab -->
+                <div x-show="activeTab === 'transfer'" class="p-6">
+                    <h3 class="text-xl font-bold mb-4">Transfer Money</h3>
+                    <form @submit.prevent="transfer()" class="max-w-md space-y-4">
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">From Account</label>
+                            <select x-model="transferForm.from_account" required
+                                    class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                                <option value="">Select account</option>
+                                <template x-for="account in accounts" :key="account.account_number">
+                                    <option :value="account.account_number" 
+                                            x-text="account.account_number + ' - ' + formatCurrency(account.balance)"></option>
+                                </template>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">To Account</label>
+                            <input x-model="transferForm.to_account" type="text" required
+                                   placeholder="Enter destination account number"
+                                   class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Amount</label>
+                            <input x-model="transferForm.amount" type="number" step="0.01" min="0.01" required
+                                   class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Description (Optional)</label>
+                            <input x-model="transferForm.description" type="text"
+                                   placeholder="Transfer description"
+                                   class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                        </div>
+                        <button type="submit" :disabled="loading"
+                                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg disabled:opacity-50 transition-colors">
+                            <span x-show="!loading"><i class="fas fa-paper-plane mr-2"></i>Transfer Money</span>
+                            <span x-show="loading"><i class="fas fa-spinner fa-spin mr-2"></i>Processing...</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Account Modal -->
+        <div x-show="showCreateAccountModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                <h3 class="text-xl font-bold mb-4">Create New Account</h3>
+                <form @submit.prevent="createAccount()" class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Account Type</label>
+                        <select x-model="createAccountForm.account_type" required
+                                class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                            <option value="">Select type</option>
+                            <option value="CHECKING">Checking</option>
+                            <option value="SAVINGS">Savings</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Initial Deposit</label>
+                        <input x-model="createAccountForm.initial_balance" type="number" step="0.01" min="0"
+                               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div class="flex space-x-3">
+                        <button type="button" @click="showCreateAccountModal = false"
+                                class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" :disabled="loading"
+                                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg disabled:opacity-50 transition-colors">
+                            Create
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Deposit Modal -->
+        <div x-show="showDepositModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                <h3 class="text-xl font-bold mb-4">Deposit Money</h3>
+                <div class="mb-4 p-3 bg-blue-50 rounded-lg">
+                    <p class="text-sm text-gray-600">Account: <span class="font-mono" x-text="selectedAccount?.account_number"></span></p>
+                    <p class="text-sm text-gray-600">Current Balance: <span class="font-bold" x-text="formatCurrency(selectedAccount?.balance || 0)"></span></p>
+                </div>
+                <form @submit.prevent="deposit()" class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Amount</label>
+                        <input x-model="depositForm.amount" type="number" step="0.01" min="0.01" required
+                               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div class="flex space-x-3">
+                        <button type="button" @click="showDepositModal = false"
+                                class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" :disabled="loading"
+                                class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg disabled:opacity-50 transition-colors">
+                            Deposit
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Withdraw Modal -->
+        <div x-show="showWithdrawModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                <h3 class="text-xl font-bold mb-4">Withdraw Money</h3>
+                <div class="mb-4 p-3 bg-red-50 rounded-lg">
+                    <p class="text-sm text-gray-600">Account: <span class="font-mono" x-text="selectedAccount?.account_number"></span></p>
+                    <p class="text-sm text-gray-600">Current Balance: <span class="font-bold" x-text="formatCurrency(selectedAccount?.balance || 0)"></span></p>
+                </div>
+                <form @submit.prevent="withdraw()" class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Amount</label>
+                        <input x-model="withdrawForm.amount" type="number" step="0.01" min="0.01" required
+                               :max="selectedAccount?.balance"
+                               class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div class="flex space-x-3">
+                        <button type="button" @click="showWithdrawModal = false"
+                                class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" :disabled="loading"
+                                class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg disabled:opacity-50 transition-colors">
+                            Withdraw
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Success/Error Messages -->
+        <div x-show="successMessage" x-transition
+             class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+            <div class="flex items-center">
+                <i class="fas fa-check-circle mr-2"></i>
+                <span x-text="successMessage"></span>
+            </div>
+        </div>
+
+        <div x-show="error && isAuthenticated" x-transition
+             class="fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+            <div class="flex items-center">
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                <span x-text="error"></span>
+                <button @click="error = ''" class="ml-2 text-white hover:text-gray-200">×</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Banking System Frontend JavaScript
+        const API_BASE = 'http://localhost:8080/api';
+
+        // Wait for Alpine to be ready
+        document.addEventListener('alpine:init', () => {
+            console.log('Alpine.js initializing...');
+            
+            Alpine.data('bankingApp', () => ({
+                // Authentication state
+                isAuthenticated: false,
+                currentUser: null,
+                authMode: 'login',
+                
+                // Application state
+                accounts: [],
+                transactions: [],
+                selectedAccount: null,
+                activeTab: 'accounts',
+                connectionStatus: null,
+                
+                // Modal states
+                showCreateAccountModal: false,
+                showDepositModal: false,
+                showWithdrawModal: false,
+                showTransferModal: false,
+                
+                // Form data
+                loginForm: {
+                    username: 'admin',
+                    password: 'password'
+                },
+                registerForm: {
+                    username: '',
+                    password: '',
+                    full_name: '',
+                    email: '',
+                    phone: ''
+                },
+                createAccountForm: {
+                    account_type: 'SAVINGS',
+                    initial_balance: 0
+                },
+                depositForm: {
+                    amount: 0
+                },
+                withdrawForm: {
+                    amount: 0
+                },
+                transferForm: {
+                    from_account: '',
+                    to_account: '',
+                    amount: 0,
+                    description: ''
+                },
+                
+                // Loading and error states
+                loading: false,
+                error: '',
+                successMessage: '',
+                
+                // Computed properties
+                get totalBalance() {
+                    return this.accounts.reduce((sum, account) => sum + (account.balance || 0), 0);
+                },
+                
+                // Transaction type mapping - converts numbers to readable text
+                getTransactionTypeText(typeNumber) {
+                    const typeMap = {
+                        0: 'Deposit',
+                        1: 'Withdrawal', 
+                        2: 'Transfer',
+                        3: 'Payment',
+                        4: 'Fee'
+                    };
+                    
+                    return typeMap[typeNumber] || typeMap[typeNumber?.toString()] || 'Unknown';
+                },
+                
+                // Transaction type icons
+                getTransactionTypeIcon(typeNumber) {
+                    const iconMap = {
+                        0: '💰',
+                        1: '💸',
+                        2: '🔄',
+                        3: '💳',
+                        4: '📋'
+                    };
+                    
+                    return iconMap[typeNumber] || iconMap[typeNumber?.toString()] || '❓';
+                },
+                
+                // Transaction type CSS classes
+                getTransactionTypeClass(typeNumber) {
+                    const classMap = {
+                        0: 'type-deposit',
+                        1: 'type-withdrawal',
+                        2: 'type-transfer',
+                        3: 'type-payment',
+                        4: 'type-fee'
+                    };
+                    
+                    return classMap[typeNumber] || classMap[typeNumber?.toString()] || 'type-unknown';
+                },
+                
+                // Initialize the app
+                async init() {
+                    console.log('Banking app initializing...');
+                    await this.testConnection();
+                    this.checkAuthStatus();
+                },
+                
+                // Test backend connection
+                async testConnection() {
+                    console.log('Testing backend connection...');
+                    try {
+                        const response = await fetch(`${API_BASE}`, { 
+                            method: 'GET',
+                            mode: 'cors',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                        
+                        if (response.ok) {
+                            this.connectionStatus = {
+                                success: true,
+                                message: 'Backend connected successfully'
+                            };
+                        } else {
+                            throw new Error(`HTTP ${response.status}`);
+                        }
+                    } catch (error) {
+                        console.error('Connection test failed:', error);
+                        this.connectionStatus = {
+                            success: false,
+                            message: 'Cannot connect to backend server. Make sure the C++ server is running on port 8080.'
+                        };
+                    }
+                },
+                
+                // Check if user is already logged in
+                checkAuthStatus() {
+                    const user = localStorage.getItem('currentUser');
+                    if (user) {
+                        try {
+                            this.currentUser = JSON.parse(user);
+                            this.isAuthenticated = true;
+                            this.loadUserData();
+                        } catch (error) {
+                            console.error('Invalid stored user data:', error);
+                            localStorage.removeItem('currentUser');
+                        }
+                    }
+                },
+                
+                // API helper function
+                async apiCall(endpoint, options = {}) {
+                    this.loading = true;
+                    this.error = '';
+                    
+                    console.log(`Making API call to: ${API_BASE}${endpoint}`);
+                    
+                    try {
+                        const response = await fetch(`${API_BASE}${endpoint}`, {
+                            mode: 'cors',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                ...options.headers
+                            },
+                            ...options
+                        });
+                        
+                        console.log(`Response status: ${response.status}`);
+                        
+                        let data;
+                        try {
+                            data = await response.json();
+                        } catch (parseError) {
+                            console.error('Failed to parse response as JSON:', parseError);
+                            throw new Error('Invalid response format from server');
+                        }
+                        
+                        console.log('Response data:', data);
+                        
+                        if (!response.ok) {
+                            throw new Error(data.message || data.error || `HTTP ${response.status}`);
+                        }
+                        
+                        return data;
+                    } catch (error) {
+                        console.error('API call failed:', error);
+                        this.error = error.message;
+                        throw error;
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+                
+                // Authentication methods
+                async login() {
+                    console.log('Attempting login...');
+                    try {
+                        const response = await this.apiCall('/login', {
+                            method: 'POST',
+                            body: JSON.stringify(this.loginForm)
+                        });
+                        
+                        if (response.success) {
+                            this.currentUser = { 
+                                username: response.username,
+                                user_id: response.user_id
+                            };
+                            this.isAuthenticated = true;
+                            this.successMessage = 'Login successful!';
+                            
+                            localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+                            
+                            // Load user data
+                            await this.loadUserData();
+                            
+                            // Clear success message after 3 seconds
+                            setTimeout(() => this.successMessage = '', 3000);
+                        } else {
+                            throw new Error(response.message || 'Login failed');
+                        }
+                        
+                    } catch (error) {
+                        console.error('Login failed:', error);
+                    }
+                },
+                
+                async register() {
+                    console.log('Attempting registration...');
+                    try {
+                        const response = await this.apiCall('/register', {
+                            method: 'POST',
+                            body: JSON.stringify(this.registerForm)
+                        });
+                        
+                        if (response.success) {
+                            this.successMessage = 'Registration successful! Please login.';
+                            this.authMode = 'login';
+                            
+                            // Clear form
+                            this.registerForm = { username: '', password: '', full_name: '', email: '', phone: '' };
+                            
+                            setTimeout(() => this.successMessage = '', 3000);
+                        } else {
+                            throw new Error(response.message || 'Registration failed');
+                        }
+                        
+                    } catch (error) {
+                        console.error('Registration failed:', error);
+                    }
+                },
+                
+                logout() {
+                    this.isAuthenticated = false;
+                    this.currentUser = null;
+                    this.accounts = [];
+                    this.transactions = [];
+                    this.selectedAccount = null;
+                    this.activeTab = 'accounts';
+                    localStorage.removeItem('currentUser');
+                    this.successMessage = 'Logged out successfully!';
+                    setTimeout(() => this.successMessage = '', 3000);
+                },
+                
+                // Data loading methods
+                async loadUserData() {
+                    if (!this.isAuthenticated) return;
+                    
+                    console.log('Loading user data...');
+                    try {
+                        await this.loadAccounts();
+                        if (this.accounts.length > 0) {
+                            await this.loadTransactions();
+                        }
+                    } catch (error) {
+                        console.error('Error loading user data:', error);
+                    }
+                },
+                
+                async loadAccounts() {
+                    try {
+                        const response = await this.apiCall(`/accounts?username=${this.currentUser.username}`);
+                        
+                        if (response.accounts) {
+                            this.accounts = response.accounts.map(account => ({
+                                ...account,
+                                balance: parseFloat(account.balance) || 0
+                            }));
+                        } else {
+                            this.accounts = [];
+                        }
+                        
+                        // Set first account as selected if none selected
+                        if (this.accounts.length > 0 && !this.selectedAccount) {
+                            this.selectedAccount = this.accounts[0];
+                        }
+                    } catch (error) {
+                        console.error('Error loading accounts:', error);
+                        this.accounts = [];
+                    }
+                },
+                
+                async loadTransactions() {
+                    try {
+                        if (!this.selectedAccount) return;
+                        
+                        const response = await this.apiCall(`/transactions?account_number=${this.selectedAccount.account_number}`);
+                        
+                        if (response.transactions) {
+                            this.transactions = response.transactions.map(transaction => ({
+                                ...transaction,
+                                amount: parseFloat(transaction.amount) || 0
+                            }));
+                        } else {
+                            this.transactions = [];
+                        }
+                    } catch (error) {
+                        console.error('Error loading transactions:', error);
+                        this.transactions = [];
+                    }
+                },
+                
+                // Account management
+                async createAccount() {
+                    try {
+                        const response = await this.apiCall('/accounts/create', {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                username: this.currentUser.username,
+                                account_type: this.createAccountForm.account_type,
+                                initial_balance: this.createAccountForm.initial_balance
+                            })
+                        });
+                        
+                        if (response.success) {
+                            this.showCreateAccountModal = false;
+                            this.successMessage = `Account created successfully! Account Number: ${response.account_number}`;
+                            
+                            // Clear form
+                            this.createAccountForm = { account_type: 'SAVINGS', initial_balance: 0 };
+                            
+                            // Reload accounts
+                            await this.loadAccounts();
+                            
+                            setTimeout(() => this.successMessage = '', 5000);
+                        } else {
+                            throw new Error(response.message || 'Account creation failed');
+                        }
+                        
+                    } catch (error) {
+                        console.error('Account creation failed:', error);
+                    }
+                },
+                
+                // Transaction methods
+                async deposit() {
+                    try {
+                        const response = await this.apiCall('/transactions/deposit', {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                account_number: this.selectedAccount.account_number,
+                                amount: this.depositForm.amount,
+                                description: 'Deposit'
+                            })
+                        });
+                        
+                        if (response.success) {
+                            this.showDepositModal = false;
+                            this.successMessage = `Deposit successful! New balance: ${this.formatCurrency(response.new_balance)}`;
+                            
+                            // Clear form
+                            this.depositForm = { amount: 0 };
+                            
+                            // Reload data
+                            await this.loadUserData();
+                            
+                            setTimeout(() => this.successMessage = '', 3000);
+                        } else {
+                            throw new Error(response.message || 'Deposit failed');
+                        }
+                        
+                    } catch (error) {
+                        console.error('Deposit failed:', error);
+                    }
+                },
+                
+                async withdraw() {
+                    try {
+                        const response = await this.apiCall('/transactions/withdraw', {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                account_number: this.selectedAccount.account_number,
+                                amount: this.withdrawForm.amount,
+                                description: 'Withdrawal'
+                            })
+                        });
+                        
+                        if (response.success) {
+                            this.showWithdrawModal = false;
+                            this.successMessage = `Withdrawal successful! New balance: ${this.formatCurrency(response.new_balance)}`;
+                            
+                            // Clear form
+                            this.withdrawForm = { amount: 0 };
+                            
+                            // Reload data
+                            await this.loadUserData();
+                            
+                            setTimeout(() => this.successMessage = '', 3000);
+                        } else {
+                            throw new Error(response.message || 'Withdrawal failed');
+                        }
+                        
+                    } catch (error) {
+                        console.error('Withdrawal failed:', error);
+                    }
+                },
+                
+                async transfer() {
+                    try {
+                        const response = await this.apiCall('/transactions/transfer', {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                from_account: this.transferForm.from_account,
+                                to_account: this.transferForm.to_account,
+                                amount: this.transferForm.amount,
+                                description: this.transferForm.description || 'Transfer'
+                            })
+                        });
+                        
+                        if (response.success) {
+                            this.showTransferModal = false;
+                            this.successMessage = 'Transfer successful!';
+                            
+                            // Clear form
+                            this.transferForm = { from_account: '', to_account: '', amount: 0, description: '' };
+                            
+                            // Reload data
+                            await this.loadUserData();
+                            
+                            setTimeout(() => this.successMessage = '', 3000);
+                        } else {
+                            throw new Error(response.message || 'Transfer failed');
+                        }
+                        
+                    } catch (error) {
+                        console.error('Transfer failed:', error);
+                    }
+                },
+                
+                // UI helper methods
+                formatCurrency(amount) {
+                    return new Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency: 'USD'
+                    }).format(amount || 0);
+                },
+                
+                formatDate(dateString) {
+                    if (!dateString) return 'N/A';
+                    return new Date(dateString).toLocaleDateString();
+                },
+                
+                // Modal helpers
+                openDepositModal(account) {
+                    this.selectedAccount = account;
+                    this.depositForm = { amount: 0 };
+                    this.showDepositModal = true;
+                },
+                
+                openWithdrawModal(account) {
+                    this.selectedAccount = account;
+                    this.withdrawForm = { amount: 0 };
+                    this.showWithdrawModal = true;
+                },
+                
+                openTransferModal() {
+                    this.transferForm = { 
+                        from_account: this.selectedAccount?.account_number || '',
+                        to_account: '', 
+                        amount: 0, 
+                        description: '' 
+                    };
+                    this.showTransferModal = true;
+                },
+                
+                // Account selection
+                selectAccount(account) {
+                    this.selectedAccount = account;
+                    this.loadTransactions();
+                }
+            }));
+            
+            console.log('Alpine.js data registered successfully');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+# ninja log v6
+45	302	7703329822250162	build.ninja	5c377700a0d4d590
+45	302	7703329822169981	D:/cpp/banking_system/backend/build/cmake_install.cmake	5c377700a0d4d590
+47	1744	7703285973740619	CMakeFiles/banking_system.dir/src/main.cpp.obj	3aa3f83d50b085d1
+43	4629	7703278497882877	CMakeFiles/banking_lib.dir/src/core/Database.cpp.obj	f4b8cb381780a323
+82	2535	7703226910522748	CMakeFiles/banking_lib.dir/src/models/Transaction.cpp.obj	6bfe90167311ccb1
+73	2274	7703226910418166	CMakeFiles/banking_lib.dir/src/models/Account.cpp.obj	c9978670201a9818
+1745	2514	7703285990716270	banking_system.exe	c0394480c2f967bb
+91	2847	7703226910605515	CMakeFiles/banking_lib.dir/src/models/User.cpp.obj	98678f3b555e7a13
+61	2631	7703268703641981	CMakeFiles/banking_lib.dir/src/services/BankingService.cpp.obj	8435261902119ef9
+4631	4892	7703278543794730	libbanking_lib.a	9e763b8adc9d3e
+55	6045	7703268703581356	CMakeFiles/banking_lib.dir/src/services/ApiServer.cpp.obj	3ed832e39e82eaad
+51	5810	7703329824243950	CMakeFiles/banking_lib.dir/src/services/ApiServer.cpp.obj	3ed832e39e82eaad
+5811	6554	7703329881769730	libbanking_lib.a	9e763b8adc9d3e
+8	221	7703332209881078	banking_system.exe	c0394480c2f967bb
+168	2433	7703772336480651	CMakeFiles/banking_system.dir/src/main.cpp.obj	3aa3f83d50b085d1
+163	2674	7703772336435331	CMakeFiles/banking_lib.dir/src/services/BankingService.cpp.obj	8435261902119ef9
+8	4306	7703772334876222	CMakeFiles/banking_lib.dir/src/core/Database.cpp.obj	f4b8cb381780a323
+157	4756	7703772336357063	CMakeFiles/banking_lib.dir/src/services/ApiServer.cpp.obj	3ed832e39e82eaad
+4756	6857	7703772382365331	libbanking_lib.a	9e763b8adc9d3e
+6858	7550	7703772403372556	banking_system.exe	c0394480c2f967bb
+61	1366	7703774923787919	CMakeFiles/banking_lib.dir/src/models/Account.cpp.obj	c9978670201a9818
+51	3290	7703774923729367	CMakeFiles/banking_lib.dir/src/core/Database.cpp.obj	f4b8cb381780a323
+3291	3420	7703774956143835	libbanking_lib.a	9e763b8adc9d3e
+3420	3575	7703774957438436	banking_system.exe	c0394480c2f967bb

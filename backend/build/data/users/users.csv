@@ -1,0 +1,4 @@
+user_id,username,password_hash,email,full_name,phone_number,role,is_active,failed_login_attempts,last_login,created_date
+USR563167,admin,hashed_admin_password,admin@bank.com,System Administrator,555-0000,ADMIN,0,5,2025-05-30 22:25:44,2025-05-30 22:25:44
+USR275357,johndoe,hashed_customer_password,john@email.com,John Doe,555-1234,CUSTOMER,1,0,Never,2025-05-30 16:43:09
+USR224216,aaa,8ba0cae13c568cfbbf6173c3a11589b436b11953be070178,arkaofficial13@gmail.com,aaaaaaaaaa,,CUSTOMER,1,0,Never,2025-05-30 21:56:47

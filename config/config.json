@@ -1,0 +1,43 @@
+{
+    "server": {
+        "host": "localhost",
+        "port": 8080,
+        "max_connections": 100,
+        "timeout_seconds": 30
+    },
+    "database": {
+        "data_directory": "data",
+        "backup_enabled": true,
+        "backup_interval_minutes": 60,
+        "max_backup_files": 10
+    },
+    "security": {
+        "session_timeout_minutes": 30,
+        "max_failed_login_attempts": 5,
+        "password_min_length": 8,
+        "require_special_characters": true
+    },
+    "accounts": {
+        "default_daily_limit": 5000.0,
+        "minimum_balance_checking": 0.0,
+        "minimum_balance_savings": 100.0,
+        "maximum_accounts_per_user": 5
+    },
+    "transactions": {
+        "max_transaction_amount": 10000.0,
+        "daily_transaction_limit": 25000.0,
+        "require_confirmation_above": 1000.0
+    },
+    "logging": {
+        "level": "INFO",
+        "file_path": "logs/banking_system.log",
+        "max_file_size_mb": 10,
+        "max_log_files": 5
+    },
+    "frontend": {
+        "streamlit_port": 8501,
+        "api_base_url": "http://localhost:8080",
+        "page_title": "Banking System",
+        "theme": "light"
+    }
+}
