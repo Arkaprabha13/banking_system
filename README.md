@@ -11,154 +11,72 @@ A modern banking system with C++ backend API and dual frontend interfaces: Strea
 ## 📂 Project Structure
 ```
 banking_system/
-├── backend/ # C++ Backend
-│ ├── build/ # Build artifacts
-│ │ ├── .ninja_deps
-│ │ ├── .ninja_log
-│ │ ├── banking_system.exe
-│ │ ├── build.ninja
-│ │ ├── CMakeCache.txt
-│ │ ├── cmake_install.cmake
-│ │ ├── libbanking_lib.a
-│ │ ├── CMakeFiles/
-│ │ │ ├── cmake.check_cache
-│ │ │ ├── CMakeConfigureLog.yaml
-│ │ │ ├── InstallScripts.json
-│ │ │ ├── rules.ninja
-│ │ │ ├── TargetDirectories.txt
-│ │ ├── banking_lib.dir/
-│ │ │ ├── src/
-│ │ │ │ ├── core/
-│ │ │ │ ├── models/
-│ │ │ │ └── services/
-│ │ ├── banking_system.dir/
-│ │ │ ├── src/
-│ │ ├── data/
-│ │ │ ├── accounts/
-│ │ │ │ └── accounts.csv
-│ │ │ ├── logs/
-│ │ │ │ └── system.log
-│ │ │ ├── transactions/
-│ │ │ │ └── transactions.csv
-│ │ │ └── users/
-│ │ │ └── users.csv
-│ ├── config/
-│ ├── data/
-│ │ ├── accounts/
-│ │ │ └── accounts.csv
-│ │ ├── logs/
-│ │ │ └── system.log
-│ │ ├── transactions/
-│ │ │ └── transactions.csv
-│ │ └── users/
-│ │ └── users.csv
-│ ├── include/
-│ │ ├── core/
-│ │ │ └── Database.h
-│ │ ├── handlers/
-│ │ ├── models/
-│ │ │ ├── Account.h
-│ │ │ ├── Transaction.h
-│ │ │ └── User.h
-│ │ ├── services/
-│ │ │ ├── ApiServer.h
-│ │ │ └── BankingService.h
-│ │ └── utils/
-│ ├── src/
-│ │ ├── main.cpp
-│ │ ├── core/
-│ │ │ └── Database.cpp
-│ │ ├── handlers/
-│ │ ├── models/
-│ │ │ ├── Account.cpp
-│ │ │ ├── Transaction.cpp
-│ │ │ └── User.cpp
-│ │ ├── services/
-│ │ │ ├── ApiServer.cpp
-│ │ │ ├── BankingService.cpp
-│ │ └── utils/
-│ ├── tests/
-├── config/
-│ └── config.json
-├── docs/
-│ ├── api/
-│ ├── technical/
-│ └── user_guide/
-├── frontend/
-│ ├── app.py
-│ ├── requirements.txt
-│ ├── assets/
-│ │ ├── css/
-│ │ ├── images/
-│ │ └── js/
-│ ├── components/
-│ ├── config/
-│ ├── pages/
-│ └── utils/
-│ └── helpers.py
-├── logs/
-├── scripts/
-│ ├── build.bat
-│ ├── build.sh
-│ ├── s.sh
-│ ├── backend/
-│ │ ├── build/
-│ │ └── data/
-│ │ ├── accounts/
-│ │ ├── logs/
-│ │ ├── transactions/
-│ │ └── users/
-│ ├── banking_system/
-│ │ ├── backend/
-│ │ │ ├── build/
-│ │ │ ├── config/
-│ │ │ ├── data/
-│ │ │ │ ├── accounts/
-│ │ │ │ ├── logs/
-│ │ │ │ ├── transactions/
-│ │ │ │ └── users/
-│ │ │ ├── include/
-│ │ │ ├── src/
-│ │ │ └── tests/
-│ │ ├── config/
-│ │ ├── docs/
-│ │ ├── frontend/
-│ │ │ ├── assets/
-│ │ │ │ ├── css/
-│ │ │ │ ├── images/
-│ │ │ │ └── js/
-│ │ │ ├── components/
-│ │ │ ├── config/
-│ │ │ ├── pages/
-│ │ │ └── utils/
-│ │ ├── logs/
-│ │ ├── scripts/
-│ │ └── tests/
-│ │ ├── integration/
-│ │ └── unit/
-│ ├── docs/
-│ │ ├── api/
-│ │ ├── technical/
-│ │ └── user_guide/
-│ ├── frontend/
-│ │ ├── assets/
-│ │ │ ├── css/
-│ │ │ ├── images/
-│ │ │ └── js/
-│ │ ├── components/
-│ │ ├── pages/
-│ │ └── utils/
-│ ├── logs/
-│ ├── scripts/
-│ └── tests/
-│ ├── integration/
-│ └── unit/
-├── tests/
-│ ├── integration/
-│ └── unit/
-└── web/
-├── app.js
-└── index.html
+├── 📁 backend/ # C++ Core Banking Engine
+│ ├── 🔧 CMakeLists.txt # Build configuration
+│ ├── 📁 build/ # Compiled binaries & artifacts
+│ │ ├── 🚀 banking_system.exe # Main executable
+│ │ ├── 📚 libbanking_lib.a # Banking library
+│ │ └── 📁 data/ # Runtime data storage
+│ │ ├── 👥 users/ # User accounts & credentials
+│ │ ├── 💳 accounts/ # Bank account records
+│ │ ├── 💸 transactions/ # Transaction history
+│ │ └── 📋 logs/ # System audit logs
+│ ├── 📁 include/ # C++ Header Files
+│ │ ├── 🗄️ core/ # Database & core functionality
+│ │ │ └── Database.h # Data persistence layer
+│ │ ├── 📊 models/ # Business entities
+│ │ │ ├── User.h # User account model
+│ │ │ ├── Account.h # Bank account model
+│ │ │ └── Transaction.h # Transaction model
+│ │ ├── 🌐 services/ # Business logic & API
+│ │ │ ├── BankingService.h # Core banking operations
+│ │ │ └── ApiServer.h # REST API server
+│ │ └── 🔧 utils/ # Helper utilities
+│ ├── 📁 src/ # C++ Implementation Files
+│ │ ├── 🎯 main.cpp # Application entry point
+│ │ ├── 🗄️ core/ # Core implementations
+│ │ ├── 📊 models/ # Model implementations
+│ │ └── 🌐 services/ # Service implementations
+│ └── 🧪 tests/ # Unit & integration tests
+│
+├── 📁 frontend/ # Streamlit Dashboard (Python)
+│ ├── 🐍 app.py # Main Streamlit application
+│ ├── 📋 requirements.txt # Python dependencies
+│ ├── 📁 assets/ # Static resources
+│ │ ├── 🎨 css/ # Custom stylesheets
+│ │ ├── 🖼️ images/ # UI images & icons
+│ │ └── ⚡ js/ # JavaScript components
+│ ├── 🧩 components/ # Reusable UI components
+│ ├── 📄 pages/ # Multi-page navigation
+│ └── 🔧 utils/ # Python helper functions
+│ └── helpers.py # Utility functions
+│
+├── 📁 web/ # Modern Web Interface (HTML/CSS/JS)
+│ ├── 🌐 index.html # Main web entry point
+│ └── ⚡ app.js # Frontend JavaScript logic
+│
+├── 📁 config/ # System Configuration
+│ └── ⚙️ config.json # Application settings
+│
+├── 📁 scripts/ # Build & Deployment Scripts
+│ ├── 🏗️ build.bat # Windows build script
+│ ├── 🏗️ build.sh # Linux/Mac build script
+│ └── 🚀 s.sh # Quick start script
+│
+├── 📁 docs/ # Documentation
+│ ├── 📡 api/ # API documentation
+│ ├── 🔧 technical/ # Technical specifications
+│ └── 📖 user_guide/ # User manuals
+│
+├── 📁 tests/ # Test Suites
+│ ├── 🔗 integration/ # End-to-end tests
+│ └── 🧪 unit/ # Component tests
+│
+├── 📁 logs/ # Application Logs
+├── 📄 README.md # This file
+├── 📄 USAGE_GUIDE.md # Detailed usage instructions
+├── 🚀 run_banking_system.bat # Windows launcher
+└── 🚀 run_banking_system.ps1 # PowerShell launcher
 ```
 
 ## 🌟 Key Features
