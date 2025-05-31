@@ -1,6 +1,4 @@
-Here's the modified README.md incorporating your project structure and dual frontend approach:
 
-```markdown
 # Banking System v1.0
 
 ![C++](https://img.shields.io/badge/C++-17-blue)
@@ -11,8 +9,8 @@ Here's the modified README.md incorporating your project structure and dual fron
 A modern banking system with C++ backend API and dual frontend interfaces: Streamlit dashboard & modern web UI.
 
 ## 📂 Project Structure
-
-```banking_system/
+```
+banking_system/
 ├── backend/ # C++ Backend
 │ ├── build/ # Build artifacts
 │ │ ├── .ninja_deps
