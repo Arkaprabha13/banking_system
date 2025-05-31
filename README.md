@@ -204,147 +204,107 @@ npm test
 - CSV files are automatically created on first run
 ```
 ```
-markdown
-🚀 Future Goals & Roadmap
-📅 Version 2.0 - Enhanced Security & Performance
-Target: Q3 2025
+# 🚀 Future Goals & Roadmap
 
-🔐 Security Enhancements
-Two-Factor Authentication (2FA): SMS/Email verification
+## 📅 Version 2.0 - Enhanced Security & Performance  
+**Target:** Q3 2025
 
-JWT Token Management: Secure session handling with refresh tokens
+### 🔐 Security Enhancements
+- **Two-Factor Authentication (2FA):** SMS/Email verification
+- **JWT Token Management:** Secure session handling with refresh tokens
+- **Password Encryption:** Upgrade from basic hashing to bcrypt/Argon2
+- **Audit Logging:** Comprehensive security event tracking
+- **Role-Based Access Control:** Granular permissions (Admin, Manager, Teller, Customer)
+- **API Rate Limiting:** Prevent brute force attacks
+- **Data Encryption:** Encrypt sensitive CSV data at rest
 
-Password Encryption: Upgrade from basic hashing to bcrypt/Argon2
+### ⚡ Performance Optimizations
+- **Database Migration:** Move from CSV to SQLite/PostgreSQL
+- **Connection Pooling:** Optimize database connections
+- **Caching Layer:** Redis integration for session management
+- **Async Processing:** Non-blocking transaction processing
+- **Load Balancing:** Multi-instance deployment support
 
-Audit Logging: Comprehensive security event tracking
+---
 
-Role-Based Access Control: Granular permissions (Admin, Manager, Teller, Customer)
+## 📅 Version 3.0 - Advanced Banking Features  
+**Target:** Q1 2026
 
-API Rate Limiting: Prevent brute force attacks
+### 💳 Financial Products
+- **Loan Management System:** Personal, business, and mortgage loans
+- **Credit Card Processing:** Virtual card generation and management
+- **Investment Portfolio:** Stock trading and portfolio tracking
+- **Savings Goals:** Automated savings plans with interest calculation
+- **Bill Payment System:** Recurring payments and scheduling
+- **Currency Exchange:** Multi-currency support with real-time rates
 
-Data Encryption: Encrypt sensitive CSV data at rest
+### 📊 Analytics & Reporting
+- **Financial Dashboard:** Advanced charts and spending analytics
+- **Budget Planning:** AI-powered budget recommendations
+- **Transaction Categorization:** Automatic expense categorization
+- **Monthly Statements:** PDF generation and email delivery
+- **Compliance Reporting:** Regulatory compliance automation
+- **Risk Assessment:** Fraud detection algorithms
 
-⚡ Performance Optimizations
-Database Migration: Move from CSV to SQLite/PostgreSQL
+---
 
-Connection Pooling: Optimize database connections
+## 📅 Version 4.0 - Mobile & Integration  
+**Target:** Q3 2026
 
-Caching Layer: Redis integration for session management
+### 📱 Mobile Applications
+- **React Native App:** Cross-platform mobile banking
+- **Progressive Web App (PWA):** Offline-capable web app
+- **Biometric Authentication:** Fingerprint and face recognition
+- **Push Notifications:** Real-time transaction alerts
+- **QR Code Payments:** Contactless payment system
+- **Mobile Check Deposit:** Camera-based check scanning
 
-Async Processing: Non-blocking transaction processing
+### 🔗 Third-Party Integrations
+- **Payment Gateways:** Stripe, PayPal, Razorpay integration
+- **Open Banking APIs:** PSD2 compliance and third-party access
+- **Accounting Software:** QuickBooks, Xero synchronization
+- **Tax Software:** Automated tax document generation
+- **Credit Bureau Integration:** Real-time credit score monitoring
+- **Blockchain Support:** Cryptocurrency wallet integration
 
-Load Balancing: Multi-instance deployment support
+---
 
-📅 Version 3.0 - Advanced Banking Features
-Target: Q1 2026
+## 📅 Version 5.0 - AI & Machine Learning  
+**Target:** Q1 2027
 
-💳 Financial Products
-Loan Management System: Personal, business, and mortgage loans
+### 🤖 Artificial Intelligence
+- **Chatbot Support:** AI-powered customer service
+- **Fraud Detection:** Machine learning anomaly detection
+- **Personalized Recommendations:** Smart financial advice
+- **Predictive Analytics:** Cash flow forecasting
+- **Voice Banking:** Voice-activated transactions
+- **Document Processing:** OCR for automatic form filling
 
-Credit Card Processing: Virtual card generation and management
+### 🌐 Cloud & Scalability
+- **Microservices Architecture:** Container-based deployment
+- **Cloud Migration:** AWS/Azure/GCP deployment
+- **Auto-scaling:** Dynamic resource allocation
+- **Global CDN:** Worldwide content delivery
+- **Multi-region Deployment:** Geographic redundancy
+- **Disaster Recovery:** Automated backup and restoration
 
-Investment Portfolio: Stock trading and portfolio tracking
+---
 
-Savings Goals: Automated savings plans with interest calculation
+## 🎯 Long-term Vision (2027+)
 
-Bill Payment System: Recurring payments and scheduling
+### 🌍 Enterprise Features
+- **Multi-tenant Architecture:** Support multiple banks
+- **White-label Solution:** Customizable branding
+- **Regulatory Compliance:** GDPR, PCI-DSS, SOX compliance
+- **Enterprise SSO:** LDAP/Active Directory integration
+- **API Marketplace:** Third-party developer ecosystem
+- **Real-time Analytics:** Live transaction monitoring
 
-Currency Exchange: Multi-currency support with real-time rates
+### 🔮 Emerging Technologies
+- **Quantum Security:** Post-quantum cryptography
+- **IoT Integration:** Smart device payments
+- **Augmented Reality:** AR-based banking interfaces
+- **5G Optimization:** Ultra-low latency transactions
+- **Edge Computing:** Distributed processing nodes
+- **Digital Identity:** Self-sovereign identity management
 
-📊 Analytics & Reporting
-Financial Dashboard: Advanced charts and spending analytics
-
-Budget Planning: AI-powered budget recommendations
-
-Transaction Categorization: Automatic expense categorization
-
-Monthly Statements: PDF generation and email delivery
-
-Compliance Reporting: Regulatory compliance automation
-
-Risk Assessment: Fraud detection algorithms
-
-📅 Version 4.0 - Mobile & Integration
-Target: Q3 2026
-
-📱 Mobile Applications
-React Native App: Cross-platform mobile banking
-
-Progressive Web App (PWA): Offline-capable web app
-
-Biometric Authentication: Fingerprint and face recognition
-
-Push Notifications: Real-time transaction alerts
-
-QR Code Payments: Contactless payment system
-
-Mobile Check Deposit: Camera-based check scanning
-
-🔗 Third-Party Integrations
-Payment Gateways: Stripe, PayPal, Razorpay integration
-
-Open Banking APIs: PSD2 compliance and third-party access
-
-Accounting Software: QuickBooks, Xero synchronization
-
-Tax Software: Automated tax document generation
-
-Credit Bureau Integration: Real-time credit score monitoring
-
-Blockchain Support: Cryptocurrency wallet integration
-
-📅 Version 5.0 - AI & Machine Learning
-Target: Q1 2027
-
-🤖 Artificial Intelligence
-Chatbot Support: AI-powered customer service
-
-Fraud Detection: Machine learning anomaly detection
-
-Personalized Recommendations: Smart financial advice
-
-Predictive Analytics: Cash flow forecasting
-
-Voice Banking: Voice-activated transactions
-
-Document Processing: OCR for automatic form filling
-
-🌐 Cloud & Scalability
-Microservices Architecture: Container-based deployment
-
-Cloud Migration: AWS/Azure/GCP deployment
-
-Auto-scaling: Dynamic resource allocation
-
-Global CDN: Worldwide content delivery
-
-Multi-region Deployment: Geographic redundancy
-
-Disaster Recovery: Automated backup and restoration
-
-🎯 Long-term Vision (2027+)
-🌍 Enterprise Features
-Multi-tenant Architecture: Support multiple banks
-
-White-label Solution: Customizable branding
-
-Regulatory Compliance: GDPR, PCI-DSS, SOX compliance
-
-Enterprise SSO: LDAP/Active Directory integration
-
-API Marketplace: Third-party developer ecosystem
-
-Real-time Analytics: Live transaction monitoring
-
-🔮 Emerging Technologies
-Quantum Security: Post-quantum cryptography
-
-IoT Integration: Smart device payments
-
-Augmented Reality: AR-based banking interfaces
-
-5G Optimization: Ultra-low latency transactions
-
-Edge Computing: Distributed processing nodes
-
-Digital Identity: Self-sovereign identity management
