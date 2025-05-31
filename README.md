@@ -105,7 +105,7 @@ banking_system/
 - C++17 compiler (GCC 9+/Clang 12+/MSVC 2019+)
 - CMake 3.26+
 - Python 3.8+ (for Streamlit)
-- Node.js 18+ (for web frontend tooling - optional)
+- Html CSS JS (for web frontend tooling - optional)
 
 ### Setup
 ```
